@@ -14,7 +14,7 @@ const (
 	SelectWhere = `where ? = ?`
 )
 
-func Process(field string, page, pagesize string) {
+func Process(field string, page, pagesize string) []byte {
 }
 func Parse(rw http.ResponseWriter, req *http.Request) {
 	args := req.URL.Query()
@@ -23,9 +23,7 @@ func Parse(rw http.ResponseWriter, req *http.Request) {
 	page := args.Get("page")
 	pagesize := args.Get("pagesize")
 	field := args.Get("field")
-	if field != "" {
-		Process(field, page, pagesize)
-	}
+	rw.Write(Process(field, page, pagesize))
 }
 func main() {
 	r := mux.NewRouter()
