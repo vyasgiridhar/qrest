@@ -26,3 +26,8 @@ func Conn() (db *sql.DB) {
 	}
 	return
 }
+
+//Query : Returns json data for a Query
+func Query(query string) (jsonData []byte, err error) {
+	return nil, nil
+}
