@@ -10,6 +10,7 @@ type Config struct {
 }
 
 //Conf : Global configuration
+//For debugging
 var Conf = Config{
 	8000,
 	"127.0.0.1",

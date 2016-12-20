@@ -9,7 +9,7 @@ import (
 	"github.com/caarlos0/env"
 	//Only init function required
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/vyasgiridhar/maria-rest/config"
+	"github.com/vyasgiridhar/qrest/config"
 )
 
 //Conn : Creates a new Database connection

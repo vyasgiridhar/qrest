@@ -6,21 +6,20 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
-	"github.com/vyasgiridhar/maria-rest/config"
+	"github.com/vyasgiridhar/qrest/config"
 )
 
-const (
-	SelectFrom  = `select * from ?`
-	SelectWhere = `where ? = ?`
-)
+const SelectFrom = `select * from `
 
 func PrepareConn(database string) string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", config.Conf.MDBUser, config.Conf.MDBPass, config.Conf.MDBHost, config.Conf.MDBPort, database)
 }
+
 func CheckField(table, field string) bool {
 	check := "select COLUMN_NAME from columns where TABLE_NAME = ?"
 	db := Conn("INFORMATION_SCHEMA")
@@ -49,15 +48,26 @@ func Conn(database string) (db *sql.DB) {
 	}
 	return
 }
-func PrepareQuery(table,field,value,page,pagesize string) (preparedQuery string) {
 
+func PrepareQuery(table, field, value string, page, pagesize int) (preparedQuery string) {
+	preparedQuery = ""
+	if table != "" {
+		preparedQuery = fmt.Sprintf("%s %s", SelectFrom, table)
+	}
+	if field != "" {
+		preparedQuery = fmt.Sprintf("%s where %s = ?", preparedQuery, field)
+	}
+	if page != 0 && pagesize != 0 {
+		preparedQuery = fmt.Sprintf("%s limit %d offset %d", preparedQuery, pagesize, page*pagesize)
+	}
+	return
 }
 
 func Process(table, field, value, page, pagesize string) []byte {
 	fmt.Println(table, field, value, page, pagesize)
-	db := Conn("Football")
-	query := PrepareQuery(table,field,value,page,pagesize string)
-	x, err := db.Query(query)
+	db := Conn(config.Conf.MDBDatabase)
+	query := PrepareQuery(table, field, value, strconv.Atoi(page), strconv.Atoi(pagesize))
+	x, err := db.Query(query, value)
 	fmt.Println(err)
 	result, _ := JSONify(x)
 	return []byte(result)
