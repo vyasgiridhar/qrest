@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/urfave/cli"
+	"github.com/vyasgiridhar/qrest"
 	"github.com/vyasgiridhar/qrest/config"
 )
 
@@ -44,16 +46,20 @@ func main() {
 	}
 	app.Action = func(c *cli.Context) {
 		args := c.Args()
-
-		config.Conf = config.Config{
-			c.Int("port"),
-			c.String("host"),
-			c.Int("mport"),
-			c.String("user"),
-			c.String("pass"),
-			c.String("database"),
+		if c.Int("port") == 0 || c.String("host") == "" || c.Int("mport") == 0 || c.String("user") == "" || c.String("pass") == "" || c.String("database") == "" {
+			fmt.Println("All arguments are required")
+			return
 		}
-		//qrest.Start()
+		if args.Present() {
+			qrest.Start(config.Config{
+				c.Int("port"),
+				c.String("host"),
+				c.Int("mport"),
+				c.String("user"),
+				c.String("pass"),
+				c.String("database"),
+			})
+		}
 	}
 	app.Run(os.Args())
 

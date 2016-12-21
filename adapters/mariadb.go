@@ -2,6 +2,7 @@ package adapters
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"database/sql"
@@ -10,6 +11,10 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/vyasgiridhar/qrest/config"
 )
+
+func PrepareConn(database string) string {
+	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", config.Conf.MDBUser, config.Conf.MDBPass, config.Conf.MDBHost, config.Conf.MDBPort, database)
+}
 
 //Query : Returns json data for a Query
 func Query(query string) (jsonData []byte, err error) {
@@ -29,7 +34,7 @@ func Conn(database string) (db *sql.DB) {
 	return
 }
 
-func PrepareQuery(table, field, value string, page, pagesize int) (preparedQuery string) {
+func PrepareQuery(table, field string, page, pagesize int) (preparedQuery string) {
 	preparedQuery = ""
 	if table != "" {
 		preparedQuery = fmt.Sprintf("%s %s", SelectFrom, table)
@@ -45,17 +50,22 @@ func PrepareQuery(table, field, value string, page, pagesize int) (preparedQuery
 
 func Process(table, field, value, page, pagesize string) []byte {
 
-	fmt.Println("Processing", table, field, value, page, pagesize)
+	log.Println("Processing", table, field, value, page, pagesize)
 
 	db := Conn(config.Conf.MDBDatabase)
 
-	query := PrepareQuery(table, field, value, strconv.Atoi(page), strconv.Atoi(pagesize))
-	x, err := db.Query(query, value)
-	fmt.Println(err)
-	result, _ := JSONify(x)
-	return []byte(result)
-}
-
-func PrepareConn(database string) string {
-	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", config.Conf.MDBUser, config.Conf.MDBPass, config.Conf.MDBHost, config.Conf.MDBPort, database)
+	if db != nil {
+		pagei, err := strconv.Atoi(page)
+		if err != nil {
+			pagesi, err := strconv.Atoi(pagesize)
+			if err != nil {
+				query := PrepareQuery(table, field, value, pagei, pagesi)
+				x, err := db.Query(query, value)
+				log.Println(err)
+				result, _ := JSONify(x)
+				return []byte(result)
+			}
+		}
+	}
+	return nil
 }
