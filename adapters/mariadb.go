@@ -25,7 +25,7 @@ func Query(query string) (jsonData []byte, err error) {
 //and assigns it to db
 func Conn(database string) (db *sql.DB) {
 	var err error
-
+	fmt.Println(PrepareConn(database))
 	db, err = sql.Open("mysql", PrepareConn(database))
 
 	if err != nil {
@@ -45,6 +45,7 @@ func PrepareQuery(table, field string, page, pagesize int) (preparedQuery string
 	if page != 0 && pagesize != 0 {
 		preparedQuery = fmt.Sprintf("%s limit %d offset %d", preparedQuery, pagesize, page*pagesize)
 	}
+	log.Println(field)
 	return
 }
 
@@ -54,18 +55,38 @@ func Process(table, field, value, page, pagesize string) []byte {
 
 	db := Conn(config.Conf.MDBDatabase)
 
+	var x *sql.Rows
+	var err error
+	var pagei int
+	var pagesi int
+
 	if db != nil {
-		pagei, err := strconv.Atoi(page)
-		if err != nil {
-			pagesi, err := strconv.Atoi(pagesize)
-			if err != nil {
-				query := PrepareQuery(table, field, value, pagei, pagesi)
-				x, err := db.Query(query, value)
-				log.Println(err)
+		pagei, err = strconv.Atoi(page)
+		if err == nil {
+			pagesi, err = strconv.Atoi(pagesize)
+			if err == nil {
+				query := PrepareQuery(table, field, pagei, pagesi)
+				fmt.Println(query)
+				fmt.Println(value)
+				if value != "" {
+					x, err = db.Query(query, value)
+				} else {
+					x, err = db.Query(query)
+				}
+				if err != nil {
+					log.Println(err)
+					return nil
+				}
 				result, _ := JSONify(x)
 				return []byte(result)
+			} else {
+				log.Println("error at parsing pagesize")
 			}
+		} else {
+			log.Println("error at parsing page")
 		}
+	} else {
+		log.Println("Error while creating db conn")
 	}
 	return nil
 }

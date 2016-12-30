@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -45,8 +46,8 @@ func CreateMux() *mux.Router {
 func Start(c config.Config) {
 	config.Conf = c
 	srv := &http.Server{
-		Handler:      r,
-		Addr:         "127.0.0.1:8000",
+		Handler:      CreateMux(),
+		Addr:         "127.0.0.1:" + strconv.Itoa(c.HTTPPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

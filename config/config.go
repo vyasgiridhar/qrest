@@ -9,13 +9,4 @@ type Config struct {
 	MDBDatabase string
 }
 
-//Conf : Global configuration
-//For debugging
-var Conf = Config{
-	8000,
-	"127.0.0.1",
-	3306,
-	"root",
-	"spd",
-	"Football",
-}
+var Conf Config

@@ -6,14 +6,17 @@ import (
 )
 
 func JSONify(rows *sql.Rows) (string, error) {
+
 	columns, err := rows.Columns()
 	if err != nil {
 		return "", err
 	}
+
 	count := len(columns)
 	tableData := make([]map[string]interface{}, 0)
 	values := make([]interface{}, count)
 	valuePtrs := make([]interface{}, count)
+
 	for rows.Next() {
 		for i := 0; i < count; i++ {
 			valuePtrs[i] = &values[i]

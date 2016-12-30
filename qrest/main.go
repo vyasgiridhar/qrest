@@ -14,12 +14,12 @@ func main() {
 	app.Name = "qrest"
 	app.Flags = []cli.Flag{
 		cli.IntFlag{
-			Name:  "port, p",
+			Name:  "rport, rp",
 			Value: 8000,
 			Usage: "Port to listen.",
 		},
 		cli.StringFlag{
-			Name:  "host, h",
+			Name:  "host",
 			Value: "127.0.0.1",
 			Usage: "Maria db url",
 		},
@@ -45,22 +45,19 @@ func main() {
 		},
 	}
 	app.Action = func(c *cli.Context) {
-		args := c.Args()
-		if c.Int("port") == 0 || c.String("host") == "" || c.Int("mport") == 0 || c.String("user") == "" || c.String("pass") == "" || c.String("database") == "" {
+		if c.Int("rport") == 0 || c.String("host") == "" || c.Int("mport") == 0 || c.String("user") == "" || c.String("pass") == "" || c.String("database") == "" {
 			fmt.Println("All arguments are required")
 			return
 		}
-		if args.Present() {
-			qrest.Start(config.Config{
-				c.Int("port"),
-				c.String("host"),
-				c.Int("mport"),
-				c.String("user"),
-				c.String("pass"),
-				c.String("database"),
-			})
-		}
+		qrest.Start(config.Config{
+			c.Int("rport"),
+			c.String("host"),
+			c.Int("mport"),
+			c.String("user"),
+			c.String("pass"),
+			c.String("database"),
+		})
 	}
-	app.Run(os.Args())
+	app.Run(os.Args)
 
 }

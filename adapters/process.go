@@ -14,7 +14,8 @@ func CheckField(table, field string) bool {
 	defer db.Close()
 	rs, err := db.Query(check, table)
 	if err != nil {
-		log.Println("Error")
+		log.Println(err)
+		return false
 	}
 	columnName := ""
 	for rs.Next() {
