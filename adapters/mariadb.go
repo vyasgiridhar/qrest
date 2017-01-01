@@ -7,7 +7,7 @@ import (
 
 	"database/sql"
 
-	//Only init function required
+	"github.com/antonholmquist/jason"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/vyasgiridhar/qrest/config"
 )
@@ -34,7 +34,7 @@ func Conn(database string) (db *sql.DB) {
 	return
 }
 
-func PrepareQuery(table, field string, page, pagesize int) (preparedQuery string) {
+func PrepareSelectQuery(table, field string, page, pagesize int) (preparedQuery string) {
 	preparedQuery = ""
 	if table != "" {
 		preparedQuery = fmt.Sprintf("%s %s", SelectFrom, table)
@@ -62,10 +62,10 @@ func Process(table, field, value, page, pagesize string) []byte {
 
 	if db != nil {
 		pagei, err = strconv.Atoi(page)
-		if err == nil {
+		if err == nil || pagei == 0 {
 			pagesi, err = strconv.Atoi(pagesize)
-			if err == nil {
-				query := PrepareQuery(table, field, pagei, pagesi)
+			if err == nil || pagesi == 0 {
+				query := PrepareSelectQuery(table, field, pagei, pagesi)
 				fmt.Println(query)
 				fmt.Println(value)
 				if value != "" {
@@ -89,4 +89,17 @@ func Process(table, field, value, page, pagesize string) []byte {
 		log.Println("Error while creating db conn")
 	}
 	return nil
+}
+
+func ProcessPost(j *jason.Object) string {
+
+	for x, value := range j.Map() {
+		fmt.Println(CheckField("Player", x), value)
+	}
+	return ""
+}
+
+func PrepareInsertQuery(table, field string, data []byte) (statement string) {
+	statement = ""
+	return
 }
