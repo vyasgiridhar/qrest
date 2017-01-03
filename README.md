@@ -1,12 +1,21 @@
-# maria-rest
+# qrest
 Create a rest api from mariadb from a given database
 
-## GET
+## The Works:
 
+To install run,
+```
+go install github.com/vyasgiridhar/qrest/qrest
+```
+
+To start the rest server,
+```
+qrest -rport 8000 -host 127.0.0.1 -mport 3306 -user *** -pass *** -database ***
+```
+
+## GET:
+```
 /table?page=2&pagesize=10
-/schema/{table}
 /table?field=value
-
-## POST
-
-/table
+```
+Where table is the table name in the database.

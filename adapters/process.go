@@ -1,9 +1,12 @@
 package adapters
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/antonholmquist/jason"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/vyasgiridhar/qrest/config"
 )
 
 const SelectFrom = `select * from `
@@ -25,4 +28,32 @@ func CheckField(table, field string) bool {
 		}
 	}
 	return false
+}
+
+func CheckTable(table string) bool {
+	query := "show tables"
+	db := Conn(config.Conf.MDBDatabase)
+	defer db.Close()
+	rs, err := db.Query(query)
+	if err != nil {
+		log.Prinln(err)
+		return false
+	}
+	tableName := ""
+	for rs.Next() {
+		rs.Scan(&tableName)
+		if tableName == table {
+			return true
+		}
+	}
+	return false
+}
+
+func ProcessPost(j *jason.Object, table string) string {
+	for x, value := range j.Map() {
+		if CheckField("Player", x) {
+			val, _ := fmt.Println(x, value)
+		}
+	}
+	return ""
 }

@@ -19,31 +19,35 @@ func ParseGet(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
 	table := vars["table"]
+	if adapters.CheckTable(table) {
+		var page, pagesize, field, value string
 
-	var page, pagesize, field, value string
+		for k := range args {
 
-	for k := range args {
-
-		if k == "page" {
-			page = args[k][0]
-		} else if k == "pagesize" {
-			pagesize = args[k][0]
-		} else if adapters.CheckField(table, k) {
-			field = k
-			value = args[k][0]
+			if k == "page" {
+				page = args[k][0]
+			} else if k == "pagesize" {
+				pagesize = args[k][0]
+			} else if adapters.CheckField(table, k) {
+				field = k
+				value = args[k][0]
+			}
 		}
-	}
 
-	fmt.Println(args)
-	rw.Write(adapters.Process(table, field, value, page, pagesize))
+		fmt.Println(args)
+		rw.Write(adapters.Process(table, field, value, page, pagesize))
+
+	} else {
+		rw.Write([]byte("Table not present in Database" + config.Conf.MDBDatabase))
+	}
 }
 
 func ParsePost(rw http.ResponseWriter, req *http.Request) {
-	//	vars := mux.Vars(req)
+	vars := mux.Vars(req)
 
-	//table := vars["table"]
+	table := vars["table"]
 	v, _ := jason.NewObjectFromReader(req.Body)
-	adapters.ProcessPost(v)
+	adapters.ProcessPost(v, table)
 }
 
 func CreateMux() *mux.Router {

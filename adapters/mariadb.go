@@ -7,7 +7,6 @@ import (
 
 	"database/sql"
 
-	"github.com/antonholmquist/jason"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/vyasgiridhar/qrest/config"
 )
@@ -89,14 +88,6 @@ func Process(table, field, value, page, pagesize string) []byte {
 		log.Println("Error while creating db conn")
 	}
 	return nil
-}
-
-func ProcessPost(j *jason.Object) string {
-
-	for x, value := range j.Map() {
-		fmt.Println(CheckField("Player", x), value)
-	}
-	return ""
 }
 
 func PrepareInsertQuery(table, field string, data []byte) (statement string) {
