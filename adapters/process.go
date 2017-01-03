@@ -36,7 +36,7 @@ func CheckTable(table string) bool {
 	defer db.Close()
 	rs, err := db.Query(query)
 	if err != nil {
-		log.Prinln(err)
+		log.Println(err)
 		return false
 	}
 	tableName := ""
@@ -52,7 +52,7 @@ func CheckTable(table string) bool {
 func ProcessPost(j *jason.Object, table string) string {
 	for x, value := range j.Map() {
 		if CheckField("Player", x) {
-			val, _ := fmt.Println(x, value)
+			fmt.Println(x, value)
 		}
 	}
 	return ""
