@@ -7,6 +7,7 @@ import (
 
 	"database/sql"
 
+	"github.com/antonholmquist/jason"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/vyasgiridhar/qrest/config"
 )
@@ -93,4 +94,9 @@ func Process(table, field, value, page, pagesize string) []byte {
 func PrepareInsertQuery(table, field string, data []byte) (statement string) {
 	statement = ""
 	return
+}
+
+func Insertinto(table string, j *jason.Object) (sucess bool) {
+	x := j.Map()
+
 }

@@ -1,6 +1,7 @@
 package adapters
 
 import (
+	"container/list"
 	"fmt"
 	"log"
 
@@ -49,11 +50,23 @@ func CheckTable(table string) bool {
 	return false
 }
 
+func columnTables(table string) list.List {
+	columns := new(list.List)
+	columns.Init()
+	columns.PushBack()
+}
+
 func ProcessPost(j *jason.Object, table string) string {
 	for x, value := range j.Map() {
 		if CheckField("Player", x) {
 			fmt.Println(x, value)
+		} else {
+			return "json invalid"
 		}
 	}
-	return ""
+
+	if Insertinto(table, j) {
+		return "inserted"
+	}
+	return "json invalid"
 }
