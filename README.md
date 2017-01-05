@@ -1,5 +1,5 @@
 # qrest
-Create a rest api from mariadb from a given database
+Create a rest api from mariadb for a database. This project was motivated by [prest](https://github.com/nuveo/prest) by [nuveo](https://github.com/nuveo)
 
 ## The Works:
 
