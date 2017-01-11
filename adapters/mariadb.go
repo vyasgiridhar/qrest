@@ -98,7 +98,7 @@ func Process(table, field, value, page, pagesize string) []byte {
 	return nil
 }
 
-func PrepareInsertQuery(table, field string, data []byte) (statement string) {
+func PrepareInsertQuery(query *string, j map[string]*jason.Value) {
 	statement = ""
 	return
 }
@@ -106,11 +106,11 @@ func PrepareInsertQuery(table, field string, data []byte) (statement string) {
 func Insertinto(table string, j *jason.Object) (sucess bool) {
 	x := j.Map()
 	query := "insert into " + table + "("
-	for key, _ := range x {
+	for key := range x {
 		query = query + "," + key
 	}
 	query += ")"
-	query = PrepareInsertQuery(map[string]*jason.Value)
+	PrepareInsertQuery(&query, x)
 	log.Println(query)
 	return
 }
