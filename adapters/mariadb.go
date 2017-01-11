@@ -12,6 +12,13 @@ import (
 	"github.com/vyasgiridhar/qrest/config"
 )
 
+func checkDatabase(name string) {
+	db := Conn(name)
+	if db.Ping != nil {
+		panic("SQL database not present or initialized")
+	}
+}
+
 func PrepareConn(database string) string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", config.Conf.MDBUser, config.Conf.MDBPass, config.Conf.MDBHost, config.Conf.MDBPort, database)
 }
@@ -98,5 +105,12 @@ func PrepareInsertQuery(table, field string, data []byte) (statement string) {
 
 func Insertinto(table string, j *jason.Object) (sucess bool) {
 	x := j.Map()
-
+	query := "insert into " + table + "("
+	for key, _ := range x {
+		query = query + "," + key
+	}
+	query += ")"
+	query = PrepareInsertQuery(map[string]*jason.Value)
+	log.Println(query)
+	return
 }

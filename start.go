@@ -53,17 +53,21 @@ func ParsePost(rw http.ResponseWriter, req *http.Request) {
 func CreateMux() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/{table}", ParseGet)
-	//	r.HandleFunc("/{table}/insert", ParsePost)
+	r.HandleFunc("/{table}/insert", ParsePost)
 	return r
 }
 
 func Start(c config.Config) {
 	config.Conf = c
+
+	checkDatabase(c.MDBDatabase)
+
 	srv := &http.Server{
 		Handler:      CreateMux(),
 		Addr:         "127.0.0.1:" + strconv.Itoa(c.HTTPPort),
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
+
 	log.Fatal(srv.ListenAndServe())
 }

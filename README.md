@@ -19,3 +19,10 @@ qrest -rport 8000 -host 127.0.0.1 -mport 3306 -user *** -pass *** -database ***
 /table?field=value
 ```
 Where table is the table name in the database.
+
+## POST:
+```
+Working on POST right now.
+```
+
+Only GET has been implemented uptil now.

@@ -1,7 +1,6 @@
 package adapters
 
 import (
-	"container/list"
 	"fmt"
 	"log"
 
@@ -48,12 +47,6 @@ func CheckTable(table string) bool {
 		}
 	}
 	return false
-}
-
-func columnTables(table string) list.List {
-	columns := new(list.List)
-	columns.Init()
-	columns.PushBack()
 }
 
 func ProcessPost(j *jason.Object, table string) string {
