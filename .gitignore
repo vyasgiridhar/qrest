@@ -7,6 +7,9 @@
 _obj
 _test
 
+# Binary
+main
+
 # Architecture specific extensions/prefixes
 *.[568vq]
 [568vq].out
