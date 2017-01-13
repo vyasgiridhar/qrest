@@ -1,7 +1,6 @@
 package adapters
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/antonholmquist/jason"
@@ -52,7 +51,6 @@ func CheckTable(table string) bool {
 func ProcessPost(j *jason.Object, table string) string {
 	for x, value := range j.Map() {
 		if CheckField("Player", x) {
-			fmt.Println(x, value)
 		} else {
 			return "json invalid"
 		}

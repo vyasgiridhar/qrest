@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"database/sql"
 
@@ -12,9 +13,9 @@ import (
 	"github.com/vyasgiridhar/qrest/config"
 )
 
-func checkDatabase(name string) {
+func CheckDatabase(name string) {
 	db := Conn(name)
-	if db.Ping != nil {
+	if db.Ping() != nil {
 		panic("SQL database not present or initialized")
 	}
 }
@@ -23,21 +24,17 @@ func PrepareConn(database string) string {
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", config.Conf.MDBUser, config.Conf.MDBPass, config.Conf.MDBHost, config.Conf.MDBPort, database)
 }
 
-//Query : Returns json data for a Query
-func Query(query string) (jsonData []byte, err error) {
-	return nil, nil
-}
-
 //Conn : Creates a new Database connection
 //and assigns it to db
 func Conn(database string) (db *sql.DB) {
 	var err error
-	fmt.Println(PrepareConn(database))
 	db, err = sql.Open("mysql", PrepareConn(database))
 
 	if err != nil {
 		panic(fmt.Sprintf("Unable to connect to database: %v\n", err))
 	}
+
+	fmt.Println("Connected to " + config.Conf.MDBDatabase)
 	return
 }
 
@@ -73,8 +70,6 @@ func Process(table, field, value, page, pagesize string) []byte {
 			pagesi, err = strconv.Atoi(pagesize)
 			if err == nil || pagesi == 0 {
 				query := PrepareSelectQuery(table, field, pagei, pagesi)
-				fmt.Println(query)
-				fmt.Println(value)
 				if value != "" {
 					x, err = db.Query(query, value)
 				} else {
@@ -86,9 +81,8 @@ func Process(table, field, value, page, pagesize string) []byte {
 				}
 				result, _ := JSONify(x)
 				return []byte(result)
-			} else {
-				log.Println("error at parsing pagesize")
 			}
+			log.Println("error at parsing pagesize")
 		} else {
 			log.Println("error at parsing page")
 		}
@@ -98,19 +92,40 @@ func Process(table, field, value, page, pagesize string) []byte {
 	return nil
 }
 
-func PrepareInsertQuery(query *string, j map[string]*jason.Value) {
-	statement = ""
+func PrepareInsertQuery(query string, j map[string]*jason.Value) (statement string) {
+
+	query += " values ('"
+	values := make([]string, 0)
+	var val string
+	for _, value := range j {
+		val, _ = value.String()
+		if val == "" {
+			integer, _ := value.Int64()
+			val = strconv.Itoa(int(integer))
+		}
+		values = append(values, val)
+	}
+	query += strings.Join(values, "', '")
+	query += "')"
+	log.Println(query)
+	statement = query
 	return
 }
 
 func Insertinto(table string, j *jason.Object) (sucess bool) {
 	x := j.Map()
 	query := "insert into " + table + "("
+	i := 0
 	for key := range x {
-		query = query + "," + key
+		if i == 0 {
+			query += key
+			i++
+		} else {
+			query += "," + key
+		}
 	}
 	query += ")"
-	PrepareInsertQuery(&query, x)
+	query = PrepareInsertQuery(query, x)
 	log.Println(query)
 	return
 }

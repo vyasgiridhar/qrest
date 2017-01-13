@@ -1,7 +1,6 @@
 package qrest
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -34,7 +33,6 @@ func ParseGet(rw http.ResponseWriter, req *http.Request) {
 			}
 		}
 
-		fmt.Println(args)
 		rw.Write(adapters.Process(table, field, value, page, pagesize))
 
 	} else {
@@ -52,15 +50,15 @@ func ParsePost(rw http.ResponseWriter, req *http.Request) {
 
 func CreateMux() *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc("/{table}", ParseGet)
-	r.HandleFunc("/{table}/insert", ParsePost)
+	r.HandleFunc("/{table}", ParseGet).Methods("GET")
+	r.HandleFunc("/{table}/insert", ParsePost).Methods("PUT")
 	return r
 }
 
 func Start(c config.Config) {
 	config.Conf = c
 
-	checkDatabase(c.MDBDatabase)
+	adapters.CheckDatabase(c.MDBDatabase)
 
 	srv := &http.Server{
 		Handler:      CreateMux(),
