@@ -20,9 +20,23 @@ qrest -rport 8000 -host 127.0.0.1 -mport 3306 -user *** -pass *** -database ***
 ```
 Where table is the table name in the database.
 
-## POST:
+Returns the result in json format.
+
+## PUT:
 ```
-Working on POST right now.
+/table
 ```
 
-Only GET has been implemented uptil now.
+Request body:
+```
+{
+    "FIELD1": "string value",
+    "FIELD2": 1234567890
+}
+```
+
+Insert the JSON data in the request body into the table
+
+## POST:
+
+Working on Deletion.

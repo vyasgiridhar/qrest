@@ -51,7 +51,7 @@ func ParsePost(rw http.ResponseWriter, req *http.Request) {
 func CreateMux() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/{table}", ParseGet).Methods("GET")
-	r.HandleFunc("/{table}/insert", ParsePost).Methods("PUT")
+	r.HandleFunc("/{table}", ParsePost).Methods("PUT")
 	return r
 }
 
