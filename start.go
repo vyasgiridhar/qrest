@@ -33,25 +33,43 @@ func ParseGet(rw http.ResponseWriter, req *http.Request) {
 			}
 		}
 
-		rw.Write(adapters.Process(table, field, value, page, pagesize))
+		rw.Write(adapters.ProcessGet(table, field, value, page, pagesize))
 
 	} else {
 		rw.Write([]byte("Table not present in Database" + config.Conf.MDBDatabase))
 	}
 }
 
-func ParsePost(rw http.ResponseWriter, req *http.Request) {
+func ParsePut(rw http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
 	table := vars["table"]
-	v, _ := jason.NewObjectFromReader(req.Body)
-	adapters.ProcessPost(v, table)
+	v, err := jason.NewObjectFromReader(req.Body)
+	if err != nil {
+		log.Println("Malformed JSON")
+		rw.Write([]byte("Malformed JSON"))
+	}
+	adapters.ProcessPut(v, table)
+}
+
+func ParsePost(rw http.ResponseWriter, req *http.Request) {
+	args := req.URL.Query()
+	vars := mux.Vars(req)
+
+	table := vars["table"]
+	v, err := jason.NewObjectFromReader(req.Body)
+	if err != nil {
+		log.Println("Malformed JSON")
+		rw.Write([]byte("Malformed JSON"))
+	}
+	adapters.PorcessPost(v, table)
 }
 
 func CreateMux() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/{table}", ParseGet).Methods("GET")
-	r.HandleFunc("/{table}", ParsePost).Methods("PUT")
+	r.HandleFunc("/{table}", ParsePut).Methods("PUT")
+	r.HandleFunc("/{table}")
 	return r
 }
 

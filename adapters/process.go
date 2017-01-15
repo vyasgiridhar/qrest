@@ -1,7 +1,9 @@
 package adapters
 
 import (
+	"database/sql"
 	"log"
+	"strconv"
 
 	"github.com/antonholmquist/jason"
 	_ "github.com/go-sql-driver/mysql"
@@ -48,8 +50,8 @@ func CheckTable(table string) bool {
 	return false
 }
 
-func ProcessPost(j *jason.Object, table string) string {
-	for x, value := range j.Map() {
+func ProcessPut(j *jason.Object, table string) string {
+	for x := range j.Map() {
 		if CheckField("Player", x) {
 		} else {
 			return "json invalid"
@@ -60,4 +62,47 @@ func ProcessPost(j *jason.Object, table string) string {
 		return "inserted"
 	}
 	return "json invalid"
+}
+
+func ProcessGet(table, field, value, page, pagesize string) []byte {
+
+	log.Println("Processing", table, field, value, page, pagesize)
+
+	db := Conn(config.Conf.MDBDatabase)
+
+	var x *sql.Rows
+	var err error
+	var pagei int
+	var pagesi int
+
+	if db != nil {
+		pagei, err = strconv.Atoi(page)
+		if err == nil || pagei == 0 {
+			pagesi, err = strconv.Atoi(pagesize)
+			if err == nil || pagesi == 0 {
+				query := PrepareSelectQuery(table, field, pagei, pagesi)
+				if value != "" {
+					x, err = db.Query(query, value)
+				} else {
+					x, err = db.Query(query)
+				}
+				if err != nil {
+					log.Println(err)
+					return nil
+				}
+				result, _ := JSONify(x)
+				return []byte(result)
+			}
+			log.Println("error at parsing pagesize")
+		} else {
+			log.Println("error at parsing page")
+		}
+	} else {
+		log.Println("Error while creating db conn")
+	}
+	return nil
+}
+
+func ProcessPost(j *jason.Object, table string) string {
+
 }
